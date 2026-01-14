@@ -33,3 +33,24 @@ STAR --runThreadN 6 \
 	--sjdbGTFfile /data/songlab/zhusitao/database/Animal/Mouse/ensembl-112/Mus_musculus.GRCm39.103.gtf \
 	--sjdbOverhang 149
 ```
+
+- Step2: Mapping
+```bash
+STAR \
+--runThreadN 8 \
+--limitBAMsortRAM 20000000000 \
+--outFilterType BySJout \
+--outFilterMismatchNmax 10  \
+--genomeDir /data/songlab/zhusitao/database/Animal/Mouse/ensembl-112/STAR_Index \
+--readFilesIn .rm_rRNA_1.fq.gz \
+.rm_rRNA_2.fq.gz \
+--readFilesCommand 'zcat' \
+--outFileNamePrefix  name_prefix \
+--outSAMtype BAM Unsorted \
+--quantMode TranscriptomeSAM GeneCounts \
+--outSAMattributes All  \
+--outSAMstrandField intronMotif \
+--outBAMcompression 6 \
+--outReadsUnmapped Fastx
+
+```
