@@ -43,6 +43,13 @@ ln -s libcurand.so.10.3.0.86 libcurand.so.10
 cd /home/zhusitao/miniconda3/envs/SurfDock/lib/python3.10/site-packages/pymesh
 mv ./lib/libstdc++.so.6 ./lib/libstdc++.so.copy.6
 ```
+- pymesh版本
+```bash
+pymesh2 是您需要的库，而不是 pymesh。
+pip install pymesh
+pip install https://github.com/nuvolos-cloud/PyMesh/releases/download/v0.3.1/pymesh2-0.3.1-cp310-cp310-linux_x86_64.whl
+请按照我们的 README 中的这个命令来安装 pymesh。
+```
 
 - APBS 版本问题，与对应的GLIBC 不支持 (导致第一步不生成.ply表面文件)
 ```bash
@@ -53,4 +60,16 @@ ln -s /data/zhusitao/project/songLab/14.SurfDock/software/share/apbs/tools/bin/m
 # /data/zhusitao/project/songLab/14.SurfDock/SurfDock/comp_surface/tools/transfer/APBS-3.4.1.Linux/bin/apbs
 cd /data/zhusitao/project/songLab/14.SurfDock/SurfDock/comp_surface/tools/transfer/APBS-3.4.1.Linux/bin/
 ln -s /data/zhusitao/project/songLab/14.SurfDock/software/bin/apbs
+```
+
+- computeAPBS.py
+由于程序识别。in文件的路径存在问题，
+所以需要将
+```bash
+os.system(make_apbs)
+```
+```bash
+pwd_dir = os.path.dirname(tmp_file_base)
+os.chdir(pwd_dir)
+os.system(make_apbs)
 ```
