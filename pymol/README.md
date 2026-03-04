@@ -295,3 +295,31 @@ interfaceResidue your_projec_name, Chain A, Chain B
 点击其中一条链的A->find->polor contacts->to any atoms, 可以看查看极性键，  
 
 点击S->lables, 可以显示共价键的键长，单位是Å。  
+
+
+### pymol 显示PDB结构，显示颜色
+1.使用 spectrum 命令  
+pymol命令行输入
+```bash
+# 从UniProt/AlphaFold下载的PDB文件，其pLDDT分数存储在B-factor列
+# 这行命令会按照B-factor值从低到高，用蓝-白-红的渐变给蛋白质上色
+spectrum b, rainbow_rev, minimum=50, maximum=90
+```
+
+解释：  
+
+`spectrum b`：指定使用B-factor列的数据来进行着色。  
+`rainbow_rev`：这是颜色方案。AlphaFold通常用蓝色表示高置信度（高分），红色表示低置信度（低分）。rainbow_rev 正好是蓝-白-红的渐变，与之一致。你也可以用 blue_white_red 。  
+`minimum=50, maximum=90`：这是pLDDT分数的范围。设置这个范围后，得分高于90的都会显示为深蓝色，低于50的显示为深红色，中间则平滑过渡。这个范围是根据AlphaFold的评分标准来的，能让着色效果和UniProt网站上看到的非常接近。
+
+2.PDB插件
+
+PyMOL有一个官方的PDB插件，它可以自动从PDB数据库获取结构，并应用一些常见的着色方案，比如显示不同的分子或结构域。
+
+不过，这个插件主要是为PDB数据库中的实验结构设计的，它不一定能完美再现UniProt上为AlphaFold结构定制的pLDDT着色。如果你的目标是通用着色，方法一更直接有效；如果你想探索蛋白质的不同结构域，可以试试这个插件：
+
+点击PyMOL菜单栏的 Plugin -> Plugin Manager。
+
+在 Repositories 或 Installed 标签页中找到并加载 PDB 插件。
+
+之后在 Plugin 菜单下就会出现 PDB Analysis 的相关选项，你可以输入PDB ID进行探索
