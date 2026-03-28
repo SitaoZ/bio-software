@@ -69,6 +69,18 @@ pip install pandas==2.2.3 matplotlib==3.10.0 absl-py==2.1.0 chex==0.1.87 \
 
 ```
 
+- 注意dm-haiku 与 jax jax.lib匹配的问题
+
+```bash
+# 查看版本
+pip show jax jaxlib
+# 升级版本
+pip install --upgrade jax jaxlib
+# 注意dm-haiku版本
+pip install -U dm-haiku
+
+```
+
 ## 1. 安装 AlphaFold 3
 
 - a. Clone AlphaFold 3 Repository
