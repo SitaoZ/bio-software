@@ -1,7 +1,7 @@
 # AlphaFold3
 利用 conda 部署更能稳定使用的 AF3.  
-环境：anaconda，python 3.11，Rocky 9（理论上主流Linux发行版皆可），CUDA 12
-
+环境：anaconda，python 3.11，Rocky 9（理论上主流Linux发行版皆可），CUDA 12  
+[参考](https://zhuanlan.zhihu.com/p/1949839940293751742)
 
 ## 0. 环境配置
 - a. 使用 Python 3.11 创建 Conda 环境：
@@ -102,3 +102,100 @@ mv ~/public_databases /home/GeneticDatabase    # 路径自行决定
 1.填写 AlphaFold 团队提供的官方申请表。  
 2.访问权限的授予将由 Google DeepMind 决定。他们计划在 2-3 个工作日内回复请求。您只能使用直接来自 Google 的 AlphaFold 3 模型参数。使用须遵守以下使用条款。  
 3.申请获批后，您将收到 af3.bin.zst 的下载链接。  
+
+```bash
+mv af3.bin.zst /home/af3_wts/    # 放在你自己的目录
+cd /home/af3_wts/
+unzstd af3.bin.zst    # Decompress the model
+```
+- d 从存储库安装 AlphaFold 3
+可能存在 zlib 链接不正确的问题。请使用以下环境变量来解决此问题：
+```bash
+cd ${ALPHAFOLD3DIR}
+
+# Export paths for zlib
+export CXXFLAGS="-I$(dirname $(find ${CONDA_PREFIX} -name zlib.h | head -n 1))"
+export LDFLAGS="-L$(dirname $(find ${CONDA_PREFIX} -name libz.so | head -n 1)) -lz"
+
+# Install AlphaFold 3 without additional dependencies
+# install 这一步可能由于网上稳定，会断，可以多试几次
+python -m pip install --no-deps . 
+```
+
+- e 构建附加组件
+
+```bash
+cd ${CONDA_PREFIX}/bin
+
+# Execute the build script
+./build_data  # Execute
+```
+
+- f 测试安装  
+通过显示帮助消息来验证安装是否成功：
+```bash
+cd ${ALPHAFOLD3DIR}
+
+# Display the help message
+python run_alphafold.py --help
+```
+
+- g 设置便捷运行 run_alphafold.py
+
+AF3 的主程序入口是 run_alphafold.py，但每次输入完整路径较为麻烦。可建立辅助运行的 bash 脚本run_af3.sh。
+
+```bash
+#!/bin/bash
+ALPHAFOLD3DIR="/run/media/Programs/alphafold3"    # 你的af3目录
+#HMMER3_BINDIR="/usr/bin" # Path to HMMER binaries (**installed via OS package manager or specify your path**)
+HMMER3_BINDIR="${CONDA_PREFIX}/bin/" # Path to Conda binarys (**installed via conda**)
+DB_DIR="/home/GeneticDatabase"    # 你的数据库目录
+MODEL_DIR="/home/af3_wts"         # 你的权重参数目录
+WORK_DIR=$(pwd)
+OUTPUT_DIR="${WORK_DIR}/af_output/${BASE_NAME}"
+LOG_FILE="${OUTPUT_DIR}/af3_run.log"
+JSON_FILE=$1                       # 输入文件
+
+python $ALPHAFOLD3DIR/run_alphafold.py \
+    --jackhmmer_binary_path="${HMMER3_BINDIR}/jackhmmer" \
+    --nhmmer_binary_path="${HMMER3_BINDIR}/nhmmer" \
+    --hmmalign_binary_path="${HMMER3_BINDIR}/hmmalign" \
+    --hmmsearch_binary_path="${HMMER3_BINDIR}/hmmsearch" \
+    --hmmbuild_binary_path="${HMMER3_BINDIR}/hmmbuild" \
+    --db_dir="${DB_DIR}" \
+    --model_dir="${MODEL_DIR}" \
+    --json_path="${WORK_DIR}/${JSON_FILE}" \
+    --output_dir="${OUTPUT_DIR}"
+```
+
+赋予可执行权限：
+
+```bash
+chmod +x run_af3.sh
+```
+
+在 bash 文件中赋予别名：
+
+```bash
+alias af3="sh /path/to/run_af3.sh"       # 该文件的存放路径
+```
+
+现在，在激活的 conda 环境、适当的工作目录中时，您只需执行以下命令即可运行 AlphaFold 3：
+
+```bash
+conda activate Alphafold3
+af3 fold_input.sh
+```
+
+
+其他注意事项
+硬件要求
+要在资源有限的系统上运行 AlphaFold 3，至少需要配备 8 或 12 GB VRAM 的 Amper NVIDIA GPU。但是，为了获得最佳性能，建议使用专业 GPU（例如 NVIDIA A100、H100）或高端消费级 GPU（例如 RTX 3090、4090 或最新的 5090），因为它们提供卓越的内存和处理能力，可显著提升 AlphaFold 3 的运行效率。
+
+CUDA 和 NVIDIA 驱动
+确认您拥有与已安装的 NVIDIA 软件包匹配的正确版本的 CUDA 和 NVIDIA 驱动程序。建议安装最新的显卡驱动程序，特别是每个发行版提供的驱动程序，尤其是在 Linux 上安装时。
+
+其他建议
+磁盘空间：数据库（627GB）、模型（1.1GB）和 Conda 环境（6.7GB）需要大量磁盘空间。请确保您至少有 700GB 的可用空间。为了获得最佳性能，建议使用 1TB 的专用 NVMe 硬盘。
+更新和支持：请定期检查 AlphaFold 3 官方代码库，了解更新情况以及依赖项的潜在变更。
+
