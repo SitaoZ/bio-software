@@ -33,3 +33,16 @@ esearch -db nuccore -query "Homo sapiens BRCA1[Gene]" | efetch -format fasta > b
 ```bash 
 esearch -db gene -query "human[orgn] AND tp53[gene]" | xtract -pattern IdList -element Id
 ```
+
+- 下载SNP
+```bash
+# 1. 获取所有SNP的UID（仅ID，速度最快）
+esearch -db snp -query "[起始坐标]:[结束坐标][Base Position] AND [染色体号][CHR] AND txid9606[Organism]"
+
+# 2. 下载XML格式的完整数据（信息最全，推荐） 
+esearch -db snp -query "[起始坐标]:[结束坐标][Base Position] AND [染色体号][CHR] AND txid9606[Organism]" | efetch -format xml > [输出文件名].xml
+
+# 3. 下载FASTA格式的序列数据
+esearch -db snp -query "[起始坐标]:[结束坐标][Base Position] AND [染色体号][CHR] AND txid9606[Organism]" | efetch -format fasta > [输出文件名].fasta
+
+```
