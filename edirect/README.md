@@ -1,6 +1,7 @@
 ## EDIRECT 使用
+[NCBI book](https://www.ncbi.nlm.nih.gov/books/NBK179288/)
 
-[Entrez Direct](https://indexofire.github.io/pathongs/book/C01_Common-Utility/03_entrez/)
+[杭州疾控Entrez Direct](https://indexofire.github.io/pathongs/book/C01_Common-Utility/03_entrez/)
 
 ```bash 
 # 安装
