@@ -46,3 +46,17 @@ esearch -db snp -query "[起始坐标]:[结束坐标][Base Position] AND [染色
 esearch -db snp -query "[起始坐标]:[结束坐标][Base Position] AND [染色体号][CHR] AND txid9606[Organism]" | efetch -format fasta > [输出文件名].fasta
 
 ```
+
+```bash
+# 搜索 TP53 基因的全部人类 SNP，获取 rs 号
+esearch -db snp -query "TP53[Gene] AND human[Organism]" | efetch -format uid > tp53_snps.txt
+
+
+# 搜索 TP53 基因的全部人类 SNP，并用 xtract 直接提取关键信息
+esearch -db snp -query "TP53[Gene] AND human[Organism]" \
+| efetch -format docsum \
+| xtract -pattern DocumentSummary \
+    -element RS CHR PHYSICAL_POSITION \
+    -block GENE_LIST -element GENE_ID GENE_SYMBOL > tp53_snps.txt
+
+```
