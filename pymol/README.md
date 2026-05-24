@@ -323,3 +323,37 @@ PyMOL有一个官方的PDB插件，它可以自动从PDB数据库获取结构，
 在 Repositories 或 Installed 标签页中找到并加载 PDB 插件。
 
 之后在 Plugin 菜单下就会出现 PDB Analysis 的相关选项，你可以输入PDB ID进行探索
+
+
+### 命令行显示全部氢键
+```bash
+# 寻找配体与蛋白之间距离小于3.5Å的所有原子对
+dist hbonds, ligand, protein, cutoff=3.5
+
+# 参数说明：
+
+# hbonds：给生成的虚线对象起的名字。
+# ligand 和 protein：请替换为你文件中的具体对象名。
+# cutoff=3.5：距离阈值（埃）。你可以根据需要调整这个值（例如，尝试3.0到4.0）。
+
+```
+
+### 显示小分子配体的全部元素
+```bash
+# 显示配体的元素标签
+label ligand, elem
+# ligand ：请替换为你文件中的具体对象名。
+```
+
+### 放宽参数寻找氢键
+```bash
+# 修改氢键检测的距离阈值（默认 3.2 Å）
+set h_bond_cutoff_center, 3.6
+
+# 修改角度阈值（默认 90 度）
+set h_bond_cutoff_edge, 60
+
+# 然后重新运行
+find polar contacts, ligand, protein
+# ligand 和 protein：请替换为你文件中的具体对象名。
+```
