@@ -400,6 +400,30 @@ hide labels, hbonds
 hide dashes, hbonds
 # 若不想显示距离对象，可删除： delete hbonds
 ```
+### 显示
+```bash
+select interface_prot1, (prot1 within 4.5 of prot2)
+select interface_prot2, (prot2 within 4.5 of prot1)
+show sticks, interface_prot1
+show sticks, interface_prot2
+color red, interface_prot1
+color blue, interface_prot2
+label interface_prot1, resn[0] + " " + resi
+label interface_prot2, resn[0] + " " + resi
+set label_font_id, 5
+set label_size, 0.5
+set label_color, yellow
+set label_outline_color, black
+hide everything, prot1
+hide everything, prot2
+show sticks, interface_prot1
+show sticks, interface_prot2
+show cartoon, prot1
+show cartoon, prot2
+set cartoon_transparency, 0.7, prot1
+set cartoon_transparency, 0.7, prot2
+png interface.png, dpi=300
+```
 
 ### pymol 保存图片
 ```bash
