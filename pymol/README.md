@@ -338,6 +338,77 @@ dist hbonds, ligand, protein, cutoff=3.5
 
 ```
 
+### 显示全部氢键所在的氨基酸位置
+```bash
+# 假设配体对象名为 ligand，蛋白对象名为 protein
+dist hbonds, ligand, protein, cutoff=3.5
+# 获取与配体距离<3.5的蛋白原子列表，然后扩展到残基
+select contacts, (protein within 3.5 of ligand)
+# 高亮这些残基：显示为sticks和surface或其他
+show sticks, contacts
+color red, contacts
+# 添加标签
+label contacts, resn+" "+resi
+# 或者 one letter 显示
+# label contacts, one_letter(resn) + resi
+# 调整标签样式
+set label_font_id, 5
+set label_size, 0.5
+```
+### 显示两个蛋白的 互作位点，透明其他位置
+```bash
+# 1. 确保有氢原子（若 PDB 无氢则添加）
+h_add prot1
+h_add prot2
+
+# 2. 找出两个蛋白之间的所有氢键，保存到对象 "hbonds"
+distance hbonds, prot1, prot2, mode=2, cutoff=3.5
+
+# 3. 获取氢键涉及的所有原子 ID 列表（来自测量对象 "hbonds"）
+#    PyMOL 的 distance 对象会包含两条 dash 和参与的原子。
+#    提取这些原子的残基标识符。
+select hb_atoms, hbonds  # 选择 hbonds 对象中的所有原子
+# 从这些原子得到所属的残基（扩展选择到整个残基）
+select hb_residues, byres (hbonds)
+
+# 4. 查看哪些残基被选中（可选）
+show sticks, hb_residues
+color red, hb_residues
+
+# 5. 将整个蛋白的卡通和线条设置为高透明（透明度 0.9）
+set cartoon_transparency, 0.9, prot1
+set cartoon_transparency, 0.9, prot2
+# 若使用表面表示，也可设置表面透明度
+# set surface_transparency, 0.8, prot1
+
+# 6. 让非互作残基的 sticks 不可见，只留下 cartoon 透明背景
+hide sticks, prot1
+hide sticks, prot2
+
+# 7. 高亮显示互作残基：用 sticks + spheres，鲜艳颜色，且不透明
+show sticks, hb_residues
+show spheres, hb_residues
+set sphere_scale, 0.3, hb_residues
+color yellow, hb_residues
+
+# 可选：为两个蛋白的互作残基分别着色
+# color red, prot1 & hb_residues
+# color blue, prot2 & hb_residues
+
+# 8. 清理视图：关闭距离对象显示的虚线（保留也可，但可能杂乱）
+hide labels, hbonds
+hide dashes, hbonds
+# 若不想显示距离对象，可删除： delete hbonds
+```
+
+### pymol 保存图片
+```bash
+# 显示当前的工作目录
+pwd
+import os; print(os.getcwd())
+png interation_snapshot.png, dpi=300
+```
+
 ### 显示小分子配体的全部元素
 ```bash
 # 显示配体的元素标签
