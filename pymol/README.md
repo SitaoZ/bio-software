@@ -424,7 +424,14 @@ set cartoon_transparency, 0.7, prot1
 set cartoon_transparency, 0.7, prot2
 png interface.png, dpi=300
 ```
+### stick 透明化
+```bash
+# 先显示为棍状
+show sticks, hbond_residues
 
+# 再设置透明度（0.9 = 几乎完全透明，0.0 = 完全不透明）
+set stick_transparency, 0.9, hbond_residues
+```
 ### pymol 保存图片
 ```bash
 # 显示当前的工作目录
