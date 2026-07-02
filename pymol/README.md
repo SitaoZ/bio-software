@@ -355,6 +355,23 @@ label contacts, resn+" "+resi
 set label_font_id, 5
 set label_size, 0.5
 ```
+### 全部氢键所在的氨基酸位置写入文件
+```bash
+# 打开（或创建）一个名为 'contacts_list.txt' 的文件用于写入
+f = open("contacts_list.txt", "w")
+
+# 遍历 'contacts' 选择中的所有Cα原子
+# 将每个残基的三字母代码(resn)和残基编号(resi)写入文件
+# iterate contacts & n. ca, f.write("%s %s\n" % (resn, resi))
+# 看全部的原子
+iterate contacts & n. ca, f.write("%s %s\n" % (resn, resi))
+
+
+# 关闭文件
+f.close()
+```
+
+
 ### 显示两个蛋白的 互作位点，透明其他位置
 ```bash
 # 1. 确保有氢原子（若 PDB 无氢则添加）
