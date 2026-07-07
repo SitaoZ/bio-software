@@ -364,13 +364,24 @@ f = open("contacts_list.txt", "w")
 # 将每个残基的三字母代码(resn)和残基编号(resi)写入文件
 # iterate contacts & n. ca, f.write("%s %s\n" % (resn, resi))
 # 看全部的原子
-iterate contacts & n. ca, f.write("%s %s\n" % (resn, resi))
+iterate contacts, f.write("%s %s\n" % (resn, resi))
 
 
 # 关闭文件
 f.close()
 ```
 
+### 查看残基编号和链 ID
+```bash
+# 快速改变A链颜色
+color red, chain A
+# 查看残基编号和链 ID
+iterate all, print ("%s %s %s" % (chain, resn, resi))
+# cmd
+from pymol import cmd
+chains = cmd.get_chains('all')
+print(chains)
+```
 
 ### 显示两个蛋白的 互作位点，透明其他位置
 ```bash
