@@ -381,7 +381,11 @@ dist hbonds, ligand, protein, cutoff=3.5
 # cutoff=3.5：距离阈值（埃）。你可以根据需要调整这个值（例如，尝试3.0到4.0）。
 
 ```
-
+### 加氢原子
+全部对象都加氢
+```bash
+h_add all
+```
 ### 显示全部氢键所在的氨基酸位置
 ```bash
 # 假设配体对象名为 ligand，蛋白对象名为 protein
