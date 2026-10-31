@@ -325,6 +325,50 @@ PyMOL有一个官方的PDB插件，它可以自动从PDB数据库获取结构，
 之后在 Plugin 菜单下就会出现 PDB Analysis 的相关选项，你可以输入PDB ID进行探索
 
 
+### pymol 着色 AF3预测的结构
+
+第一步：配置和显示
+
+```bash
+# 只显示蛋白质Cartoon结构
+hide everything, all
+show cartoon, polymer.protein
+
+# 按照AlphaFold标准pLDDT配色
+color 0x0053D6, polymer.protein
+color 0x65CBF3, (polymer.protein and b < 90)
+color 0xFFDB13, (polymer.protein and b < 70)
+color 0xFF7D45, (polymer.protein and b < 50)
+
+# 设置白色背景
+bg_color white
+
+# 优化显示
+set cartoon_fancy_helices, 1
+set antialias, 2
+
+# 调整结构显示
+orient polymer.protein
+zoom polymer.protein
+
+```
+这段代码不需要知道你的 蛋白 对象名称，因为 polymer.protein 会选择当前加载的所有蛋白质原子。如果 PyMOL 中还加载了其他蛋白，也会一起着色；此时可以将 polymer.protein 替换为你的 TTLL2 对象名称。
+
+第二步：AF3 原始 .cif 文件通常将 pLDDT 存放在 B-factor 字段，PyMOL 中对应 b。可以输入：
+
+```bash
+iterate (polymer.protein and name CA and resi 100), print(resi, b)
+```
+
+第三步：导出图片
+
+```bash
+set ray_opaque_background, off
+set ray_shadows, off
+png ID_plddt.png, width=2400, height=1800, dpi=300, ray=1
+save ID_plddt.pse
+```
+
 ### 命令行显示全部氢键
 ```bash
 # 寻找配体与蛋白之间距离小于3.5Å的所有原子对
