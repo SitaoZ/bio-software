@@ -427,6 +427,88 @@ iterate contacts, f.write("%s %s\n" % (resn, resi))
 f.close()
 ```
 
+### 小分子和蛋白互作位点输出（详细版）
+```bash
+# 1. 分别选择小分子和蛋白
+select ligand_sel, model 67604-48-2_932
+select protein_sel, model TTLL2_pure
+
+# 2. 显示接触虚线和距离标签
+dist hbonds, ligand_sel, protein_sel, cutoff=2.0, mode=0, reset=1
+enable hbonds
+show dashes, hbonds
+show labels, hbonds
+set dash_color, yellow, hbonds
+set dash_width, 2.5, hbonds
+set label_distance_digits, 2
+
+# 3. 选择接触原子，并扩展到完整残基
+select contacts, byres (protein_sel within 2.0 of ligand_sel)
+
+show sticks, contacts or ligand_sel
+color red, contacts
+
+# 每个残基只标注一次，避免重复标签
+label contacts, ""
+label contacts and name CA, "%s/%s%s" % (chain,resn,resi)
+set label_size, 14
+
+# 4. 导出接触原子对及其距离
+python
+from pymol import cmd
+import os
+
+cutoff = 2.0
+state = 1
+
+pairs = cmd.find_pairs(
+    "ligand_sel",
+    "protein_sel",
+    state1=state,
+    state2=state,
+    cutoff=cutoff,
+    mode=0
+)
+
+outfile = os.path.abspath("contacts_list4.txt")
+
+with open(outfile, "w", encoding="utf-8") as f:
+    f.write(
+        "Ligand_object\tLigand_resn\tLigand_resi\t"
+        "Ligand_atom\tLigand_index\t"
+        "Protein_object\tProtein_chain\tProtein_resn\t"
+        "Protein_resi\tProtein_atom\tProtein_index\tDistance_A\n"
+    )
+
+    for ligand_ref, protein_ref in sorted(set(pairs)):
+        ligand_atom_sel = "(model %s and index %d)" % ligand_ref
+        protein_atom_sel = "(model %s and index %d)" % protein_ref
+
+        a = cmd.get_model(ligand_atom_sel, state=state).atom[0]
+        b = cmd.get_model(protein_atom_sel, state=state).atom[0]
+
+        distance = cmd.get_distance(
+            ligand_atom_sel,
+            protein_atom_sel,
+            state=state
+        )
+
+        f.write(
+            "%s\t%s\t%s\t%s\t%d\t"
+            "%s\t%s\t%s\t%s\t%s\t%d\t%.3f\n"
+            % (
+                ligand_ref[0], a.resn, a.resi, a.name, a.index,
+                protein_ref[0], b.chain, b.resn, b.resi,
+                b.name, b.index, distance
+            )
+        )
+
+print("Contact atom pairs: %d" % len(set(pairs)))
+print("Saved to: " + outfile)
+python end
+
+```
+
 ### 查看残基编号和链 ID
 ```bash
 # 快速改变A链颜色
