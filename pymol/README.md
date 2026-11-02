@@ -107,7 +107,15 @@ png saveID.png, 16.93cm, 16.93cm, dpi=300
 save saveID.png
 ```
 
+- 显示链的编号
+```bash
+# 加载你的LDLR结构
+load /Users/zhusitao/Downloads/AF-P01130-F1-model_v6.pdb, LDLR_model
 
+# 列出这个结构的所有链ID
+print(cmd.get_chains("LDLR_model"))
+
+```
 
 ### AlphaFold3   
 AlphaFold3预测的蛋白质之间的互作，使用PyMOL进行查看[example](https://www.bilibili.com/video/BV1Qt8iesE4e/?vd_source=16694f427952f2c01f3659ee0722320a)
