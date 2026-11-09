@@ -1,3 +1,4 @@
+# AutoDock-Vina 
 ## 1. Preparing the receptor
 
 该命令指定 `1iep_receptorH.pdb` 为输入文件，并将 `1iep_receptor` 用作输出文件的基本名称。根据 `-p` 选项的要求，程序将生成一个受体 PDBQT 文件；而根据 `-v` 选项以及用于定义搜索框的参数（`--box_size` 和 `--box_center`），程序还将生成一个包含搜索框尺寸信息的 TXT 文件以及一个对应的 PDB 文件。其中，TXT 文件可用作对接计算的配置文件，而 PDB 文件则可用于在 PyMOL 等其他软件中对搜索框进行可视化展示。
@@ -109,3 +110,34 @@ mode |   affinity | dist from best mode
 ```
 ### refernence
 [vina-document](https://autodock-vina.readthedocs.io/en/latest/docking_basic.html)
+
+
+
+
+### AutoDock-Vina 结果解读
+```bash 
+1. Vina运行结束后，主要生成文件 1iep_ligand_vina_out.pdbqt，包含所有可能的配体构象（根据你设置的num_modes数量）。
+
+用记事本打开 1iep_ligand_vina_out.pdbqt 文件，每个model信息的格式如下：
+
+2. REMARK VINA RESULT:这里的 -13.223 表示结合自由能，单位是kcal/mol；
+具体来说：<-13.223 表示结合能力非常强了
+
+3. REMARK INTER: 这里的 -19.111 是指蛋白与配体之间真正的相互作用能，包括Van der Waals、Hydrogen Bond、Hydrophobic和electrostatic，这一项越负越好，说明蛋白和配体之间作用很强。
+
+4. REMARK INTRA: 这里的 -0.477 是指配体自身内部能量，例如配体为了进入结合位点，发生了扭转、弯曲或者构象变化，这些都会产生内部能量，数值越接近0越自然。
+```
+
+[reference](https://zhuanlan.zhihu.com/p/2058121151537209384)
+
+
+### AutoDock-Vina 可视化
+```bash
+1. 打开PyMol > File > Open > 1iep_receptorH.pdb（受体）
+2. File > Open > 1iep_ligand_vina_out.pdbqt（配体构象）
+3. 右侧点击受体文件 1iep_receptorH.pdb > S > surface
+4. 为了更加突出配体的位置，可以修改受体的透明度：set transparency, 0.7, 1iep_receptorH.pdb
+5. 点击1IEP > H > cartoon:
+6. 保存图片:File > Export Image As > PNG
+
+```
