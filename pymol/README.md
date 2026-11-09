@@ -625,7 +625,7 @@ set h_bond_cutoff_edge, 60
 find polar contacts, ligand, protein
 # ligand 和 protein：请替换为你文件中的具体对象名。
 ```
-### mac magic mouse 平移图形
+### Mac OS magic mouse 平移图形
 ```bash
 button left, alt, movxy
 ⌥ Option + 左键拖动 = 平移
