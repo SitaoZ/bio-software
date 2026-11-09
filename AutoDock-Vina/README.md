@@ -141,3 +141,4 @@ mode |   affinity | dist from best mode
 6. 保存图片:File > Export Image As > PNG
 
 ```
+[reference](https://blog.csdn.net/2403_86665173/article/details/143081298)
