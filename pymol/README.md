@@ -764,3 +764,20 @@ align mobile_obj target_obj
 super mobile_obj target_obj
 
 ```
+
+### 显示PDB下载的结构
+
+```bash
+load 2HKA.cif, NPC2
+hide everything
+show cartoon, polymer.protein
+color cyan, polymer.protein
+
+# 显示配体（需根据结构实际配体编号确认）
+show sticks, organic
+color yellow, organic
+
+# 显示与配体接近的蛋白残基
+select pocket, byres (polymer.protein within 5 of organic)
+show sticks, pocket
+```
