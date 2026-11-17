@@ -29,6 +29,22 @@ label name CA, ""
 - 选择选定的残基  
 鼠标单击残基，在sele栏目选择L，选择residual
 
+```bash
+# 选择第100-150位残基
+select active_site, resi 100-150
+
+```
+
+- 重命名对象
+```bash
+set_name PLD6_WT_ligand_3d, ligand
+```
+
+- 拆分多对象档案（Multi-state SDF）
+```bash
+save top1_pose.sdf, ligand, state=1
+```
+
 
 - 显示亲水和疏水氨基酸  
 ```bash
@@ -114,6 +130,42 @@ load /Users/zhusitao/Downloads/AF-P01130-F1-model_v6.pdb, LDLR_model
 
 # 列出这个结构的所有链ID
 print(cmd.get_chains("LDLR_model"))
+
+```
+
+- 计算静电势能
+
+真空环境（Vacuum）下快速计算蛋白质的的静电势能（Electrostatic Potential, ESP）
+```bash
+util.protein_vacuum_esp("WT", mode=2, quiet=0)
+```
+
+- 配体的几何中心
+```bash
+print(cmd.centerofmass("ligand"))
+```
+
+- B factor 着色
+
+spectrum b：根据 B-factor （在 AlphaFold 中代表 pLDDT 预测可信度）的数值原子或残基着色。  
+red_yellow_green_cyan_blue：设定从红色（最低）到蓝色（最高）的渐变色谱。  
+minimum=50, maximum=90：将数值范围控制在 50 到 90 之间（低于 50 会显示为红色极低可信度，高于 90 则维持为蓝色最高可信度）  
+
+```bash
+spectrum b, red_yellow_green_cyan_blue, minimum=50, maximum=90
+```
+
+- ALphaFold3四色  
+直接使用AF3的四色代码着色
+```
+set_color af_dark_blue, [0.00, 0.33, 0.84]
+set_color af_light_blue, [0.40, 0.80, 0.95]
+set_color af_yellow, [1.00, 0.86, 0.07]
+set_color af_orange, [1.00, 0.49, 0.27]
+color af_orange, b < 50
+color af_yellow, b > 49.999 and b < 70
+color af_light_blue, b > 69.999 and b < 90
+color af_dark_blue, b > 89.999
 
 ```
 
@@ -682,3 +734,33 @@ with open("interface_pairs.csv", "w") as f:
 python end
 ```
 这种方法计算的是两个残基之间的最近原子距离，包含氢键、范德华接触等，并不都是氢键。此外，双重原子循环对较大蛋白可能运行较慢。
+
+
+### pymol 查看导入信息
+```bash
+# 输出结构的名称
+print(cmd.get_names("objects"))
+
+# 打印出所有链的信息
+print(cmd.get_chains())
+
+# 输出小分子配体的信息
+# Hetero Atoms代表所有非标准氨基酸或核酸
+print(set([atom.resn for atom in cmd.get_model("hetatm").atom]))
+```
+
+### 结构重合比对
+
+适用于比较蛋白的野生型和突变体的结果
+```bash
+# 序列导向重叠
+# 适用序列相似度高（通常 > 30%）的同源蛋白
+# 运行较快
+align mobile_obj target_obj
+
+# 结构导向重叠
+# 适用序列相似度低（< 30%），但折叠（Fold）相似的蛋白
+# 运行较慢
+super mobile_obj target_obj
+
+```
