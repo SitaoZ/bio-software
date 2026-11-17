@@ -630,3 +630,55 @@ find polar contacts, ligand, protein
 button left, alt, movxy
 ⌥ Option + 左键拖动 = 平移
 ```
+
+### pymol 输出两条链互作的氨基酸对及距离
+
+只需要修改`chain A`和`chain B`的名称，或者不需要修改，因为导入两条互作蛋白时，AB链自动赋予了。
+
+```bash
+select interface, byres ((chain A within 3.5 of chain B) or (chain B within 3.5 of chain A))
+show sticks, interface
+label interface and name CA, "%s-%s%s" % (chain, resn, resi)
+```
+
+```bash
+python
+import csv
+
+pairs = {}
+
+# 获取两条链的原子坐标
+atoms_A = cmd.get_model("chain A").atom
+atoms_B = cmd.get_model("chain B").atom
+
+for a in atoms_A:
+    for b in atoms_B:
+        dx = a.coord[0] - b.coord[0]
+        dy = a.coord[1] - b.coord[1]
+        dz = a.coord[2] - b.coord[2]
+        dist = (dx*dx + dy*dy + dz*dz)**0.5
+
+        if dist <= 3.5:
+            key = (a.resi, a.resn, b.resi, b.resn)
+
+            if key not in pairs or dist < pairs[key]:
+                pairs[key] = dist
+
+with open("interface_pairs.csv", "w") as f:
+    writer = csv.writer(f)
+    writer.writerow([
+        "Chain_A_Residue",
+        "Chain_B_Residue",
+        "Min_Distance_A"
+    ])
+
+    for (ra, na, rb, nb), dist in sorted(pairs.items()):
+        writer.writerow([
+            f"{na}{ra}",
+            f"{nb}{rb}",
+            round(dist, 3)
+        ])
+
+python end
+```
+这种方法计算的是两个残基之间的最近原子距离，包含氢键、范德华接触等，并不都是氢键。此外，双重原子循环对较大蛋白可能运行较慢。
