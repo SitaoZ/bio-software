@@ -765,6 +765,11 @@ super mobile_obj target_obj
 
 ```
 
+```bash
+# 查看指定对象的链
+print(cmd.get_chains("5VLQ"))
+```
+
 ### 显示PDB下载的结构
 
 ```bash
