@@ -836,7 +836,9 @@ print(f"Saved {len(rows)} aligned residue pairs")
 print(f"Output file: {outfile}")
 
 python end
+```
 
+```bash
 # 最终你可以直接在 Excel 里筛：寻找结构高度保守的残基
 CA_distance_Angstrom < 2
 
