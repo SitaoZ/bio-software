@@ -770,6 +770,80 @@ super mobile_obj target_obj
 print(cmd.get_chains("5VLQ"))
 ```
 
+
+- 结构比对输出对应的位置和alpha碳原子的距离
+```bash
+# 先执行结构比对
+super 5VLQ and name CA, TTLL2_model and name CA, object=aln_ca
+
+# 同时计算每对残基 Cα 距离
+python
+import csv
+import math
+
+aln = cmd.get_raw_alignment("aln_ca")
+
+rows = []
+
+for pair in aln:
+    obj1, idx1 = pair[0]
+    obj2, idx2 = pair[1]
+
+    atom1 = cmd.get_model(f"{obj1} and index {idx1}").atom[0]
+    atom2 = cmd.get_model(f"{obj2} and index {idx2}").atom[0]
+
+    x1, y1, z1 = atom1.coord
+    x2, y2, z2 = atom2.coord
+
+    distance = math.sqrt(
+        (x1-x2)**2 +
+        (y1-y2)**2 +
+        (z1-z2)**2
+    )
+
+    rows.append([
+        obj1,
+        atom1.chain,
+        atom1.resi,
+        atom1.resn,
+        obj2,
+        atom2.chain,
+        atom2.resi,
+        atom2.resn,
+        round(distance, 3)
+    ])
+
+outfile = "5VLQ_vs_TTLL2_alignment.csv"
+
+with open(outfile, "w", newline="") as f:
+    writer = csv.writer(f)
+
+    writer.writerow([
+        "Structure_1",
+        "Chain_1",
+        "Residue_ID_1",
+        "Residue_Name_1",
+        "Structure_2",
+        "Chain_2",
+        "Residue_ID_2",
+        "Residue_Name_2",
+        "CA_distance_Angstrom"
+    ])
+
+    writer.writerows(rows)
+
+print(f"Saved {len(rows)} aligned residue pairs")
+print(f"Output file: {outfile}")
+
+python end
+
+# 最终你可以直接在 Excel 里筛：寻找结构高度保守的残基
+CA_distance_Angstrom < 2
+
+```
+注意：`super 5VLQ, TTLL2_model` 最终是 `1141 atoms aligned`。
+`5VLQ_vs_TTLL2_alignment.csv`是残基级别的 Cα 对应关系，因此行数不会是 1141，而通常只有几百行。这其实更适合你后续做 5VLQ → TTLL2 氨基酸位点映射。
+
 ### 显示PDB下载的结构
 
 ```bash
